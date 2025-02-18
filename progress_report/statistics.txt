@@ -1,0 +1,10 @@
+Dataset Statistics:
+--------------------------------------------------
+Total Reviews: 426
+Average Text Length: 246 characters
+Median Text Length: 151 characters
+
+Sentiment Distribution:
+Positive: 142 reviews
+Negative: 142 reviews
+Neutral: 142 reviews
