@@ -138,6 +138,11 @@
             <div class="sentiment-chart">
                 <canvas id="sentimentChart"></canvas>
             </div>
+            <div id="percentage-labels" style="margin-top: 20px; display: flex; justify-content: space-around;">
+                <div style="color: rgba(255, 99, 132, 1)" id="negative-percent"></div>
+                <div style="color: rgba(54, 162, 235, 1)" id="neutral-percent"></div>
+                <div style="color: rgba(75, 192, 192, 1)" id="positive-percent"></div>
+            </div>
             <div id="sentiment-result" class="sentiment-text"></div>
         </div>
     </div>
@@ -170,6 +175,11 @@
 
                 const result = await response.json();
                 console.log('Analysis result:', result);
+
+                // Update percentage labels
+                document.getElementById('negative-percent').textContent = `Negative: ${(result.probabilities.negative * 100).toFixed(1)}%`;
+                document.getElementById('neutral-percent').textContent = `Neutral: ${(result.probabilities.neutral * 100).toFixed(1)}%`;
+                document.getElementById('positive-percent').textContent = `Positive: ${(result.probabilities.positive * 100).toFixed(1)}%`;
 
                 document.getElementById('result-container').style.display = 'block';
                 
@@ -204,6 +214,15 @@
                     options: {
                         responsive: true,
                         plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw;
+                                        const percentage = (value * 100).toFixed(1);
+                                        return `${context.label}: ${percentage}%`;
+                                    }
+                                }
+                            },
                             legend: {
                                 position: 'bottom',
                                 labels: {

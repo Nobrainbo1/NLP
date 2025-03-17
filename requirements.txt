@@ -9,3 +9,4 @@ emoji>=2.2.0
 textblob>=0.17.1
 flask>=2.0.1
 flask-cors>=3.0.10
+contractions>=0.1.73
