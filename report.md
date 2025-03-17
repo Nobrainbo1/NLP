@@ -1,8 +1,8 @@
-# Amazon Reviews Sentiment Analysis - Approach Comparison
+# Report - Amazon Reviews Sentiment Analysis
 
-## Initial Approach
+# Initial Approach
 
-### Data Processing
+## Data Processing
 - Dataset: Amazon Product Reviews Dataset
 - We extract reviews from the amazon_reviews.csv file, focusing on the 'reviewText' and 'overall' columns
 - Ratings are converted to sentiment classes: 0-2 as negative (0), 3 as neutral (1), and 4-5 as positive (2)
@@ -17,7 +17,8 @@
   - Short word removal (length < 2)
 - Train/Test split of 80/20
 
-### Feature Engineering
+
+## Feature Engineering
 - TF-IDF Vectorization using scikit-learn
 - Parameters:
   - max_features=100000
@@ -25,14 +26,16 @@
   - max_df=0.95
   - ngram_range=(1, 2)
 
-### Models
+
+## Models
 1. Naive Bayes Classifier (MultinomialNB)
    - result: 0.65 accuracy
 
 2. Logistic Regression
    - result: 0.66 accuracy
 
-### Conclusion to the initial approach
+
+## Conclusion to the Initial Approach
 Both models have the score of f1-score below 50% on neutral. but the score of positive and negative are above 60%.
 Both models are very bad at predicting the sentiment of the review. With the model not predicting any Negative when inserting new data.
 It might be because of the model or the data of each class have too much apart in term of text length.
@@ -42,10 +45,12 @@ Showing here:
 
 ---
 
-## New Approach (V2)
+
+# New Approach (V2)
 Change up how we process the data and use a new model to see if it will perform better.
 
-### Data Processing Improvements
+
+## Data Processing Improvements
 - Changed how we handle text length:
   - Set max length to 200 words
   - For long reviews: Keep first 75% and last 25% to get both the main point and conclusion
@@ -65,14 +70,16 @@ Change up how we process the data and use a new model to see if it will perform 
     - One with mixed up sentences (if the review is long enough)
   - Also add mixed pairs of reviews to help the model learn better
 
-### Test with the same models
+
+## Test with the Same Models
 1. Naive Bayes Classifier (MultinomialNB) with improved processing:
    - Accuracy deproved from 0.65 to 0.62
 
 2. Logistic Regression with improved processing:
    - Accuracy deproved from 0.66 to 0.65
 
-### Test with a new model (LSTM)
+
+## Test with a New Model (LSTM)
 - Implemented LSTM neural network with pre-trained embeddings:
   - GloVe embeddings (200 dimensions)
   - Embedding layer with frozen pre-trained weights
@@ -97,29 +104,17 @@ Change up how we process the data and use a new model to see if it will perform 
 - Results:
   - Test accuracy: 98%
   But the prediction on unseen data is incredibly bad. It detect all the review as positive.
-```
-Review: 'This product is terrible'
-Predicted sentiment: Positive
-Confidence scores:
-  Negative: 2.19%
-  Neutral:  17.61%
-  Positive: 80.20%
 
-Review: 'It's okay, nothing special'
-Predicted sentiment: Positive
-Confidence scores:
-  Negative: 1.51%
-  Neutral:  7.65%
-  Positive: 90.84%
+| Review | Predicted Sentiment | Confidence Scores |
+|--------|-------------------|------------------|
+| "This product is terrible" | Positive | Negative: 2.19%<br>Neutral: 17.61%<br>Positive: 80.20% |
+| "It's okay, nothing special" | Positive | Negative: 1.51%<br>Neutral: 7.65%<br>Positive: 90.84% |
+| "Amazing product, I love it!" | Positive | Negative: 0.01%<br>Neutral: 16.31%<br>Positive: 72.21% |
 
-Review: 'Amazing product, I love it!'
-Predicted sentiment: Positive
-Confidence scores:
-  Negative: 0.01%
-  Positive: 90.84%
-```
 
-### Conclusion to the new approach
+
+
+## Conclusion to the New Approach
 The enhanced preprocessing and LSTM model implementation revealed several important findings:
 
 1. Model Performance Issues:
@@ -150,10 +145,12 @@ The enhanced preprocessing and LSTM model implementation revealed several import
 The results suggest that for this specific task and dataset size, simpler traditional models are more reliable. The LSTM approach, while theoretically more powerful, requires significantly more data and careful tuning to outperform traditional methods in sentiment analysis, regardless of whether augmentation is used.
 
 ---
-## V3 Approach (Ensemble Method)
+
+# V3 Approach (Ensemble Method)
 After learning from our previous approaches, we developed an ensemble method that focuses on three key areas:
 
-### 1. Advanced Data Processing
+
+## 1. Advanced Data Processing
 - **Improved Text Cleaning:**
   - We preserved sentiment-critical punctuation (!!!, ???, ..., !?, ?!) by adding spaces around them, helping these markers remain during tokenization
   - We expanded contractions using the `contractions` library (turning "don't" into "do not") to better handle negations
@@ -168,7 +165,8 @@ After learning from our previous approaches, we developed an ensemble method tha
   - We protected sentiment-bearing phrases during preprocessing steps like lemmatization
   - We preserved relationships between negations and the words they modify using word-joining
 
-### 2. Enhanced Feature Engineering
+
+## 2. Enhanced Feature Engineering
 - **Text Processing Pipeline:**
   - We created a sentiment word preservation system with selected terms:
     * About 40 negative terms like 'terrible', 'awful', 'disappointing', and 'broken'
@@ -192,7 +190,8 @@ After learning from our previous approaches, we developed an ensemble method tha
   - We used 50,000 word features and 10,000 character features
   - We lowered the minimum document frequency threshold to include less common terms
 
-### 3. Ensemble Model Approach
+
+## 3. Ensemble Model Approach
 We combined three different classifiers with a weighted voting system:
 
 1. Multinomial Naive Bayes
@@ -216,7 +215,8 @@ We combined three different classifiers with a weighted voting system:
   - We used stratified cross-validation to include all sentiment classes
   - We applied a weighted averaging system (70% ensemble, 30% SVC) for final predictions
 
-### Results
+
+## Results
 While our test accuracy numbers might initially seem less impressive, they tell an important story:
 
 - Our previous LSTM model showed 98% accuracy but was severely overfitted
@@ -224,48 +224,35 @@ While our test accuracy numbers might initially seem less impressive, they tell 
 
 Here's how our model performs on some example reviews:
 
-```
-Review: 'This product is terrible'
-Predicted sentiment: Negative (confidence: 44%)
-Probabilities:
-  Negative: 43.57%
-  Neutral:  41.19%
-  Positive: 15.24%
 
-Review: 'It's okay, nothing special'
-Predicted sentiment: Positive (confidence: 60%)
-Probabilities:
-  Negative: 29.18%
-  Neutral:  10.92%
-  Positive: 59.90%
+| Review | Predicted Sentiment | Probabilities |
+|--------|-------------------|---------------|
+| "This product is terrible" | Negative (44%) | Negative: 43.57%<br>Neutral: 41.19%<br>Positive: 15.24% |
+| "It's okay, nothing special" | Positive (60%) | Negative: 29.18%<br>Neutral: 10.92%<br>Positive: 59.90% |
+| "Amazing product, I love it!" | Positive (72%) | Negative: 11.49%<br>Neutral: 16.31%<br>Positive: 72.21% |
 
-Review: 'Amazing product, I love it!'
-Predicted sentiment: Positive (confidence: 72%)
-Probabilities:
-  Negative: 11.49%
-  Neutral:  16.31%
-  Positive: 72.21%
-```
+
 
 These examples show that our model now provides more balanced and realistic confidence scores. While not perfect, it's much better at distinguishing between different sentiment classes than our previous approaches.
 
-### Benchmark Results on Unseen Data(IMDB dataset)
+
+## Benchmark Results on Unseen Data (IMDB Dataset)
 
 We conducted rigorous testing on unseen data to evaluate how our models perform in real-world scenarios. The results were disappointing but informative:
 
-```
-----------------------------------------------------------------------
-Model                            F1 Score   Accuracy  Precision
-----------------------------------------------------------------------
-Naive Bayes (v2)                   40.91%     42.00%     63.64%
-Logistic Regression (v2)           37.67%     27.80%     68.41%
-Ensemble (v3)                      33.19%     32.00%     65.94%
-----------------------------------------------------------------------
-```
+
+| Model | F1 Score | Accuracy | Precision |
+|-------|----------|----------|------------|
+| Naive Bayes (v2) | 40.91% | 42.00% | 63.64% |
+| Logistic Regression (v2) | 37.67% | 27.80% | 68.41% |
+| Ensemble (v3) | 33.19% | 32.00% | 65.94% |
+
+
 
 Unfortunately, the LSTM model could not be properly evaluated in this benchmark test due to technical limitations and its severe overfitting issues mentioned earlier.
 
-### Assessment of Model Performance
+
+## Assessment of Model Performance
 
 1. **Poor Real-World Performance:**
    - All models performed significantly worse on unseen data than on test data
@@ -289,11 +276,13 @@ Unfortunately, the LSTM model could not be properly evaluated in this benchmark 
 
 While the raw accuracy numbers don't show improvement (still below 70%), we've made some progress in creating more balanced predictions, though many challenges remain.
 
-## Summary and Conclusion
+
+# Summary and Conclusion
 
 Our journey through three different approaches to sentiment analysis has taught us valuable lessons about the challenges and opportunities in this field. Here's what we've learned:
 
-### What Worked Well
+
+## What Worked Well
 
 - **Specific Word Handling:** Adding specific handling for common sentiment words and negations helped. By keeping these markers in our processing pipeline, we improved how our model understands some sentiment patterns.
 
@@ -301,13 +290,15 @@ Our journey through three different approaches to sentiment analysis has taught 
 
 - **Better Evaluation:** Looking beyond accuracy to evaluate our models on real-world examples gave us more honest results.
 
-### Challenges We Faced
+
+## Challenges We Faced
 
 - **Limited Dataset Size:** Despite our best efforts with data processing and augmentation, we were constrained by our relatively small dataset. This particularly affected our deep learning approaches, which typically require much larger training sets.
 
 - **Unpredictable Edge Cases:** We encountered several reviews that our model struggled with, particularly those with complex sentiment expressions, sarcasm, or mixed opinions. These cases revealed the limitations of our current approach.
 
-### Future Directions
+
+## Future Directions
 
 - **Expanding the Dataset:** Collecting more diverse reviews would help address many of our current limitations, especially for training more sophisticated models.
 
@@ -315,7 +306,8 @@ Our journey through three different approaches to sentiment analysis has taught 
 
 - **Context-Aware Analysis:** Developing methods to better understand context, sarcasm, and mixed sentiments would significantly improve our model's performance on challenging reviews.
 
-### Final Thoughts
+
+## Final Thoughts
 
 Our work with different sentiment analysis approaches shows that simpler models with specific feature adjustments can sometimes work better than complex deep learning solutions when data is limited. Our ensemble model doesn't achieve high accuracy (still below 70%), but it's somewhat more balanced than our earlier attempts.
 
@@ -323,17 +315,20 @@ The specific word handling and weight adjustments we added in V3 helped counter 
 
 This project shows that sentiment analysis is challenging with limited data. While we've made some small improvements through targeted adjustments, we're still far from a highly accurate solution. The accuracy remains below 70%, and many complex cases continue to be misclassified.
 
-## Web Implementation
+
+# Web Implementation
 
 We developed a web-based interface to make our sentiment analysis tool accessible and user-friendly. Here's how we implemented it:
 
-### Backend Implementation
+
+## Backend Implementation
 - Used Flask framework for its simplicity and Python compatibility
 - Created routes to handle both GET (initial page load) and POST (sentiment analysis) requests
 - Integrated our V3 ensemble model using pickle for model loading
 - Implemented error handling for invalid inputs and model prediction issues
 
-### Frontend Design
+
+## Frontend Design
 - Created a responsive HTML template with Bootstrap for styling
 - Implemented a clean, intuitive interface with:
   - A text input area for users to enter their reviews
@@ -344,7 +339,8 @@ We developed a web-based interface to make our sentiment analysis tool accessibl
   - Color-coded segments for different sentiments (red for negative, yellow for neutral, green for positive)
   - Interactive tooltips showing exact probability percentages
 
-### Key Features
+
+## Key Features
 - Real-time sentiment analysis with immediate visual feedback
 - Probability distribution display for all three sentiment classes
 - Responsive design that works well on both desktop and mobile devices
@@ -354,6 +350,7 @@ We developed a web-based interface to make our sentiment analysis tool accessibl
 
 Users can quickly analyze text sentiment through this interface, which shows the breakdown of negative, neutral, and positive sentiment probabilities in an easy-to-understand format. The doughnut chart visualization makes it simple to interpret the results at a glance.
 
-## References
+
+# References
 
 [^1]: Gong, X., Ying, W., Zhong, S., & Gong, S. (2022). Text Sentiment Analysis Based on Transformer and Augmentation. *Frontiers in Psychology*, 13, 906061. https://doi.org/10.3389/fpsyg.2022.906061
